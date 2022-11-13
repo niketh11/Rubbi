@@ -48,9 +48,13 @@ async def on_command(ctx):
   bal = await db.find_one({"id": member.id})
   if bal is None:
     await db.insert_one({"id": member.id, "wallet": 100, "bank": 0})
-    ri = await client.get_channel(1039387444119867523)
+    ri = client.get_channel(1039387444119867523)
     await ri.send(f"created new user {member.name} ")
+    await ctx.send(" I had created your account:D")
   else:
+    c = client.get_channel(1039387444119867523) 
+    b = ctx.message.author
+    await c.send(f"command used by {b}")
     print(" command used")
 
 
@@ -387,6 +391,7 @@ async def stats(ctx):
 @client.event
 async def on_command_error(ctx, err):
   await ctx.send(f"{err}")
-  
+  b = client.get_channel(1039387444119867523)
+  await b.send(f"{err}")
 keep_alive()
 client.run(os.environ['token'])
