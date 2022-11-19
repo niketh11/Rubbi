@@ -216,9 +216,11 @@ async def profile(ctx, *, member: nextcord.Member):
   
   
   draw = ImageDraw.Draw(profile)
-  draw.text((850,550),"ye",fill = (0,0,0), stroke_width=2, stroke_fill=(255,255,255))
-  draw.text((400, 800)," teste")
- 
+  membername = member.name
+  myFont = ImageFont.truetype('./DrumNBass-ywGy2.ttf', 60)
+  draw.text((400,200),membername,font = myFont,fill = (255,255,255))
+  draw.text((400,300),wal,font = myFont,fill = (255,255,255))
+  draw.text((400,400),ban,font = myFont,fill = (255,255,255))
   profile.paste(pfp, (98, 200))
   profile.save('profilew.png')
   await ctx.send(file=nextcord.File("profilew.png"))
@@ -339,10 +341,12 @@ async def help(ctx):
                 embed2 = nextcord.Embed(title = "<:rubbi3:1024138777154818071>|Commands",description = """bal      
 beg      
 coinflip 
+slots
 daily    
 deposit  
 give      
 help 
+profile
 hunt 
 fish
 withdraw 
@@ -386,7 +390,37 @@ async def stats(ctx):
 
 
 
+@client.command()
+@commands.cooldown(1, 60, type = commands.BucketType.user)
+async def slots(ctx, *, amount:int):
+  um = ctx.message.author
+  h = await db.find_one({"id": ctx.author.id})
+  if amount>h["wallet"]:
+    await ctx.send("you don't have enough money")
+  else:
+    b = [
+    "🍎🍎🍎", 
+    "🍒🍈🍓",
+    "🍏🍏🍏",
+    "🍋🍊🍐"]
+    c = random.choice(b)
+    d = "🍎🍎🍎"or"🍏🍏🍏"
+    if c==d:
+      msg = await ctx.send("<a:slots:1043391558826860585><a:slots:1043391558826860585><a:slots:1043391558826860585>")
+      await asyncio.sleep(4)
+      await msg.edit(f"{c}")
+      await db.update_many({"id": um.id},{"$inc": {"wallet": +amount}})
+      await ctx.send(f"you won {amount+amount}")
+    else:
+      msg = await ctx.send("<a:slots:1043391558826860585><a:slots:1043391558826860585><a:slots:1043391558826860585>")
+      await asyncio.sleep(4)
+      await msg.edit(f"{c}")
+      await db.update_many({"id": um.id},{"$inc": {"wallet": -amount}})
+      await ctx.send(f"you lost")
 
+
+
+    
 
 @client.event
 async def on_command_error(ctx, err):
